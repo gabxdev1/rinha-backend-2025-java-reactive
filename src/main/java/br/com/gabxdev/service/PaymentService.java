@@ -6,6 +6,7 @@ import br.com.gabxdev.response.PaymentSummaryGetResponse;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
 import java.time.ZoneOffset;
 
 import static br.com.gabxdev.mapper.JsonParse.parseInstant;
@@ -37,15 +38,19 @@ public class PaymentService {
         var from = parseInstant(fromS);
         var to = parseInstant(toS);
 
-        return paymentMiddleware.syncPaymentSummary(from, to)
-                .then(Mono.fromSupplier(() -> {
-                    if (from.atZone(ZoneOffset.UTC).getYear() == 2000) {
-                        return paymentRepository.getTotalSummary();
-                    } else {
-                        return paymentRepository.getSummaryByTimeRange(from, to);
-                    }
-                }))
-                .flatMap(paymentMiddleware::takeSummaryMerged);
+        return Mono.zip(paymentMiddleware.syncPaymentSummary(from, to), internalGetPaymentSummary(from, to))
+                .map((tuple) ->
+                        PaymentMiddleware.mergeSummary(tuple.getT1(), tuple.getT2()));
+    }
+
+    private Mono<PaymentSummaryGetResponse> internalGetPaymentSummary(Instant from, Instant to) {
+        return Mono.fromSupplier(() -> {
+            if (from.atZone(ZoneOffset.UTC).getYear() == 2000) {
+                return paymentRepository.getTotalSummary();
+            } else {
+                return paymentRepository.getSummaryByTimeRange(from, to);
+            }
+        });
     }
 
     public void purgePayments() {
