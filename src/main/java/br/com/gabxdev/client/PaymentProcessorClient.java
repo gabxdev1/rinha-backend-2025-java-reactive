@@ -55,13 +55,7 @@ public class PaymentProcessorClient {
         return apiPaymentProcessor.post()
                 .uri(paymentProcessorUrlFallBack)
                 .bodyValue(json)
-                .exchangeToMono(response -> {
-                    if (response.statusCode().is2xxSuccessful()) {
-                        return Mono.just(true);
-                    } else {
-                        return Mono.just(false);
-                    }
-                })
+                .exchangeToMono(response -> Mono.just(response.statusCode().is2xxSuccessful()))
                 .timeout(Duration.ofSeconds(timeoutFallback))
                 .onErrorReturn(false)
                 .block();
@@ -71,25 +65,9 @@ public class PaymentProcessorClient {
         return apiPaymentProcessor.post()
                 .uri(paymentProcessorUrlDefault)
                 .bodyValue(json)
-                .exchangeToMono(response -> {
-                    if (response.statusCode().is2xxSuccessful()) {
-                        return Mono.just(true);
-                    } else {
-                        return Mono.just(false);
-                    }
-                })
+                .exchangeToMono(response -> Mono.just(response.statusCode().is2xxSuccessful()))
                 .timeout(Duration.ofSeconds(timeoutDefault))
                 .onErrorReturn(false)
                 .block();
     }
-
-    /**
-     * apiPaymentProcessor.post()
-     *                 .uri(paymentProcessorUrlDefault)
-     *                 .bodyValue(json)
-     *                 .retrieve()
-     *                 .toBodilessEntity()
-     *                 .timeout(Duration.ofSeconds(timeoutDefault))
-     *                 .block();
-     */
 }
