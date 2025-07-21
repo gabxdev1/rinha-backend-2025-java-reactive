@@ -5,16 +5,12 @@ import br.com.gabxdev.response.PaymentSummaryGetResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Instant;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Component
 public class PaymentMiddleware {
-
-    private final AtomicReference<Sinks.One<PaymentSummaryGetResponse>> sinkRef = new AtomicReference<>();
 
     private final RestClient apiInternalClient;
 
@@ -31,30 +27,8 @@ public class PaymentMiddleware {
                 callBackEndSummary(from, to)).subscribeOn(Schedulers.boundedElastic());
     }
 
-//    public Mono<Void> syncPaymentSummary(Instant from, Instant to) {
-//        Sinks.One<PaymentSummaryGetResponse> sink = Sinks.one();
-//        sinkRef.set(sink);
-//
-//        return Mono.fromRunnable(() -> {
-//            System.out.println(Thread.currentThread().getName());
-//            var response = callBackEndSummary(from, to);
-//            sink.tryEmitValue(response);
-//        }).subscribeOn(Schedulers.boundedElastic()).then();
-//    }
-
-//    public Mono<PaymentSummaryGetResponse> takeSummaryMerged(PaymentSummaryGetResponse current) {
-//        var sink = sinkRef.getAndSet(null);
-//        if (sink == null) {
-//            System.out.println("No sink available");
-//            return Mono.error(new IllegalStateException("Nenhuma resposta disponível"));
-//        }
-//
-//        return sink.asMono()
-//                .map(remote -> mergeSummary(current, remote));
-//    }
-
     public static PaymentSummaryGetResponse mergeSummary(PaymentSummaryGetResponse summary1,
-                                                   PaymentSummaryGetResponse summary2) {
+                                                         PaymentSummaryGetResponse summary2) {
         var api1TotalAmount1 = summary1.getDefaultApi().getTotalAmount();
         var api2TotalAmount1 = summary2.getDefaultApi().getTotalAmount();
 
