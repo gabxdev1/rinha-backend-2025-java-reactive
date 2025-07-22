@@ -31,8 +31,6 @@ server:
     enabled: false
   netty:
     validate-headers: false
-#    max-keep-alive-requests: ${KEEP_ALIVE:1000}
-#    initial-buffer-size: 10MB
 
 logging:
   level:
@@ -44,13 +42,11 @@ rinha:
   api:
     backend: ${BACK_END_URL:http://localhost:8083}
   server:
-    http-client-worker: ${HTTP_CLIENT_WORKER:15}
-  queue-buffer: ${QUEUE_BUFFER:30000}
+    worker-pool-size: ${WORKER_POOL_SIZE:15}
+  queue-buffer: ${QUEUE_BUFFER:10000}
   payment:
     processor:
-      timeout-default: ${TIMEOUT_DEFAULT:350}
-      timeout-fallback: ${TIMEOUT_FALLBACK:350}
-      retry-api-default: ${RETRY_API_DEFAULT:3}
+      retry-api-default: ${RETRY_API_DEFAULT:14}
       url:
         default: ${PAYMENT_PROCESSOR_URL_DEFAULT:http://localhost:8001/payments}
         fallback: ${PAYMENT_PROCESSOR_URL_FALLBACK:http://localhost:8002/payments}

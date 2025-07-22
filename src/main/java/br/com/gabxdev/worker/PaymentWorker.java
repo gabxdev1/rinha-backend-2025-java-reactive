@@ -7,18 +7,19 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Component
 public class PaymentWorker {
 
-    @Value("${rinha.server.http-client-worker}")
-    private Integer workersQuantity;
+    @Value("${rinha.server.worker-pool-size}")
+    private Integer workerPoolSize;
 
     @Value("${rinha.queue-buffer}")
     private Integer queueBuffer;
 
-    private LinkedBlockingQueue<Payment> queue;
+    private ArrayBlockingQueue<Payment> queue;
 
     private final InMemoryPaymentDatabase paymentRepository;
 
@@ -31,9 +32,9 @@ public class PaymentWorker {
 
     @PostConstruct
     public void start() {
-        this.queue = new LinkedBlockingQueue<>(queueBuffer);
+        this.queue = new ArrayBlockingQueue<>(queueBuffer);
 
-        for (int i = 0; i < workersQuantity; i++) {
+        for (int i = 0; i < workerPoolSize; i++) {
             Thread.startVirtualThread(this::runWorker);
         }
     }

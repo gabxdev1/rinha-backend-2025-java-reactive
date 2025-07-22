@@ -20,14 +20,10 @@ public class PaymentProcessorClient {
     @Value("${rinha.payment.processor.url.fallback}")
     public String paymentProcessorUrlFallBack;
 
-    @Value("${rinha.payment.processor.timeout-default}")
-    public int timeoutDefault;
-
-    @Value("${rinha.payment.processor.timeout-fallback}")
-    public int timeoutFallback;
-
     @Value("${rinha.payment.processor.retry-api-default}")
     public int retryApiDefault;
+
+    private final Duration timeout = Duration.ofSeconds(10);
 
     public PaymentProcessorClient(WebClient apiPaymentProcessor) {
         this.apiPaymentProcessor = apiPaymentProcessor;
@@ -56,7 +52,7 @@ public class PaymentProcessorClient {
                 .uri(paymentProcessorUrlFallBack)
                 .bodyValue(json)
                 .exchangeToMono(response -> Mono.just(response.statusCode().is2xxSuccessful()))
-                .timeout(Duration.ofSeconds(timeoutFallback))
+                .timeout(timeout)
                 .onErrorReturn(false)
                 .block();
     }
@@ -66,7 +62,7 @@ public class PaymentProcessorClient {
                 .uri(paymentProcessorUrlDefault)
                 .bodyValue(json)
                 .exchangeToMono(response -> Mono.just(response.statusCode().is2xxSuccessful()))
-                .timeout(Duration.ofSeconds(timeoutDefault))
+                .timeout(timeout)
                 .onErrorReturn(false)
                 .block();
     }
