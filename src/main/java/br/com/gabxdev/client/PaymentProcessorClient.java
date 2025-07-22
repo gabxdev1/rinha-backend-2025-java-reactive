@@ -51,15 +51,6 @@ public class PaymentProcessorClient {
         return false;
     }
 
-    private Boolean callApiDefaultWithRetry(String json) {
-        for (int i = 1; i <= retryApiDefault; i++) {
-
-                request.setType(PaymentProcessorType.DEFAULT);
-
-                return true;
-        }
-    }
-
     private Boolean callApiFallBack(String json) {
         return apiPaymentProcessor.post()
                 .uri(paymentProcessorUrlFallBack)
