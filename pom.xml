@@ -10,7 +10,7 @@
     </parent>
     <groupId>br.com.gabxdev</groupId>
     <artifactId>rinha-backend-2025-java-reactive</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>rinha-backend-2025-java-reactive</name>
     <description>rinha-backend-2025-java</description>
     <properties>

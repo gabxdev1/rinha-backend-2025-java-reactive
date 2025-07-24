@@ -42,7 +42,7 @@ rinha:
   api:
     backend: ${BACK_END_URL:http://localhost:8083}
   server:
-    worker-pool-size: ${WORKER_POOL_SIZE:15}
+    worker-pool-size: ${WORKER_POOL_SIZE:25}
   queue-buffer: ${QUEUE_BUFFER:10000}
   payment:
     processor:

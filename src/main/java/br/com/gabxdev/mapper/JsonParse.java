@@ -8,13 +8,38 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 public class JsonParse {
-    private final static String key = "\"correlationId\":";
+    private static String KEY_UUID = "\"correlationId\":";
+    private static String KEY_AMOUNT = "\"amount\":";
 
     public static String extractUUIDFromRequest(String json) {
-        int idx = json.indexOf(key);
+        int idx = json.indexOf(KEY_UUID);
 
-        var start = json.indexOf('"', idx + key.length()) + 1;
+        var start = json.indexOf('"', idx + KEY_UUID.length()) + 1;
         var end = json.indexOf('"', start);
+        return json.substring(start, end);
+    }
+
+    public static String extractAmountFromRequest(String json) {
+        var idx = json.indexOf(KEY_AMOUNT);
+        var start = idx + KEY_AMOUNT.length();
+
+        char c;
+        do {
+            c = json.charAt(start++);
+        } while (c == ' ');
+
+        start--;
+        var end = start;
+
+        while (true) {
+            var ch = json.charAt(end);
+            if ((ch >= '0' && ch <= '9') || ch == '.') {
+                end++;
+            } else {
+                break;
+            }
+        }
+
         return json.substring(start, end);
     }
 
@@ -66,6 +91,35 @@ public class JsonParse {
                 .append("\"totalAmount\":").append(amountTotalDefault)
                 .append("}")
                 .append("}")
+                .toString();
+    }
+
+    public static String parseToJsonPaymentSummaryInternal(PaymentSummaryGetResponse paymentSummary) {
+        var totalRequestsDefault = paymentSummary.getDefaultApi().getTotalRequests();
+        var totalRequestsFallback = paymentSummary.getFallbackApi().getTotalRequests();
+
+
+        return buildSummaryJsonInternal(
+                totalRequestsDefault.toString(),
+                paymentSummary.getDefaultApi().getTotalAmount().toPlainString(),
+                totalRequestsFallback.toString(),
+                paymentSummary.getFallbackApi().getTotalAmount().toPlainString()
+        );
+    }
+
+    private static String buildSummaryJsonInternal(String totalRequestsDefault, String totalAmountDefault,
+                                           String totalRequestsFallback,
+                                           String amountTotalDefault) {
+
+        var sb = new StringBuilder(100);
+
+        return sb.append(totalRequestsDefault)
+                .append("-")
+                .append(totalAmountDefault)
+                .append("-")
+                .append(totalRequestsFallback)
+                .append("-")
+                .append(amountTotalDefault)
                 .toString();
     }
 }

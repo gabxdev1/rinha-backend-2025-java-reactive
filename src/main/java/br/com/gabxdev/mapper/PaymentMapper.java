@@ -6,12 +6,11 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 public class PaymentMapper {
-    private final static BigDecimal amount = new BigDecimal("19.90");
-
     public static Payment toPayment(String request) {
         var correlationId = JsonParse.extractUUIDFromRequest(request);
+        var amount = JsonParse.extractAmountFromRequest(request);
 
-        var payment = new Payment(correlationId, amount,
+        var payment = new Payment(correlationId, new BigDecimal(amount),
                 Instant.now());
 
         payment.json = JsonParse.buildPaymentDTO(payment);
