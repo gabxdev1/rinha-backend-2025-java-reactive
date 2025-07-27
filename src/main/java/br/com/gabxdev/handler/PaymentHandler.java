@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Component
 public class PaymentHandler {
@@ -31,9 +32,9 @@ public class PaymentHandler {
     }
 
     public Mono<ServerResponse> purgePayments(ServerRequest request) {
-        paymentService.purgePayments();
-
-        return serverResponseOk;
+        return Mono.fromRunnable(paymentService::purgePayments)
+                .subscribeOn(Schedulers.boundedElastic())
+                .then(serverResponseOk);
     }
 
     public Mono<ServerResponse> purgePaymentsInternal(ServerRequest request) {

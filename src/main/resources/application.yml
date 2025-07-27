@@ -20,7 +20,7 @@ spring:
   jmx:
     enabled: false
 server:
-  port: ${SERVER_PORT:8084}
+  port: ${SERVER_PORT:9999}
   error:
     include-binding-errors: never
     include-path: never
@@ -34,9 +34,9 @@ server:
 
 logging:
   level:
-    root: ${LOG_LEVEL:INFO}
+    root: ${LOG_LEVEL:OFF}
     org:
-      springframework: ${LOG_LEVEL:INFO}
+      springframework: ${LOG_LEVEL:OFF}
 
 rinha:
   api:

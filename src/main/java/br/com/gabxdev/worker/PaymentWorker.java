@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 @Component
 public class PaymentWorker {
@@ -56,9 +55,7 @@ public class PaymentWorker {
     }
 
     public void enqueue(Payment request) {
-        if (!queue.offer(request)) {
-            throw new RuntimeException("queue full");
-        }
+        queue.offer(request);
     }
 
     private void processPayment(Payment payment) {
